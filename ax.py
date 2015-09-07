@@ -16,19 +16,32 @@ output1 = PdfFileWriter()
 output2 = PdfFileWriter()
 input = PdfFileReader(open(args.pdf, "rb"))
 pages=input.getNumPages()
-slice ={2:[lambda x: x,
-         lambda x: x+1,
-         lambda x: x+1,
-         lambda x: x-2],
-        4:[lambda x: x,
-         lambda x: x+1,
-         lambda x: x+2,
+
+# slice ={2:[lambda x: x,
+#          lambda x: x+1,
+#          lambda x: x+1,
+#          lambda x: x-2],
+#         4:[lambda x: x,
+#          lambda x: x+1,
+#          lambda x: x+2,
+#          lambda x: x+3,
+#          lambda x: x-1,
+#          lambda x: x-4,
+#          lambda x: x+1,
+#          lambda x: x-2]}
+
+slice ={2:[lambda x: x+3,
+         lambda x: x-1,
+         lambda x: x-1,
+         lambda x: x-1],
+        4:[lambda x: x+7,
+         lambda x: x-1,
          lambda x: x+3,
          lambda x: x-1,
-         lambda x: x-4,
+         lambda x: x-3,
          lambda x: x+1,
-         lambda x: x-2]}
-
+         lambda x: x-3,
+         lambda x: x-3]}
 rearranged=[]
 
 def chunks(list, n):
@@ -37,15 +50,13 @@ def chunks(list, n):
         yield list[i:i+n]
 
 for c in chunks(range(0,pages), args.pps*2):
-    rearranged.append([x(y) for x, y in zip(slice[args.pps], c) if x(y)<pages-1])
-
-rearranged.append([pages-1])
+    rearranged.append([x(y) if (x(y)<=pages-1) else -1 for x, y in zip(slice[args.pps], c)])
 
 for pages in rearranged:
     for page in pages[:args.pps]:
-        output1.addPage(input.getPage(page))
+        output1.addBlankPage() if page==-1 else output1.addPage(input.getPage(page))
     for page in pages[args.pps:]:
-        output2.addPage(input.getPage(page))
+        output2.addBlankPage() if page==-1 else output2.addPage(input.getPage(page))
 
 outputStream = file(re.sub(r'(.*)\.pdf', r'\1X1.pdf', args.pdf), "wb")
 output1.write(outputStream)
