@@ -9,7 +9,7 @@ import re
 parser = argparse.ArgumentParser(description='Rearrange pdf pages to print and save some trees.')
 parser.add_argument('pdf', type=str, help='pdf file to rearrange')
 parser.add_argument('pps', type=int, help='number of pages per side')
-parser.add_argument("--start", type=int, default=0, help="number of first page(1 based)")
+parser.add_argument("--start", type=int, default=1, help="number of first page(1 based)")
 parser.add_argument("--end", type=int, default=0, help="number of last page(1 based)")
 args = parser.parse_args()
 
