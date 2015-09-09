@@ -9,13 +9,16 @@ import re
 parser = argparse.ArgumentParser(description='Rearrange pdf pages to print and save some trees.')
 parser.add_argument('pdf', type=str, help='pdf file to rearrange')
 parser.add_argument('pps', type=int, help='number of pages per side')
-
+parser.add_argument("--start", type=int, default=0, help="number of first page(1 based)")
+parser.add_argument("--end", type=int, default=0, help="number of last page(1 based)")
 args = parser.parse_args()
 
 output1 = PdfFileWriter()
 output2 = PdfFileWriter()
 input = PdfFileReader(open(args.pdf, "rb"))
 pages=input.getNumPages()
+start=args.start
+end=args.end if args.end>0 else pages
 
 # slice ={2:[lambda x: x,
 #          lambda x: x+1,
@@ -49,7 +52,7 @@ def chunks(list, n):
     for i in xrange(0, len(list), n):
         yield list[i:i+n]
 
-for c in chunks(range(0,pages), args.pps*2):
+for c in chunks(range(start-1, end), args.pps*2):
     rearranged.append([x(y) if (x(y)<=pages-1) else -1 for x, y in zip(slice[args.pps], c)])
 
 for pages in rearranged:
